@@ -38,7 +38,6 @@
                 <configuration>
                     <file>${project.basedir}/src/main/keepass/test.kdbx</file>
                     <password>admin123</password>
-                    <jceWorkaround>true</jceWorkaround>
                 </configuration>
                 <executions>
                     <execution>

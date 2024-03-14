@@ -16,6 +16,14 @@
 
 package org.knowhowlab.maven.plugins.keepass;
 
+import static java.lang.String.format;
+import static org.apache.maven.plugins.annotations.LifecyclePhase.VALIDATE;
+import static org.knowhowlab.maven.plugins.keepass.dao.KeePassDAO.convertToUUID;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -26,15 +34,6 @@ import org.knowhowlab.maven.plugins.keepass.dao.KeePassDAO;
 import org.knowhowlab.maven.plugins.keepass.dao.KeePassEntry;
 import org.knowhowlab.maven.plugins.keepass.dao.KeePassGroup;
 import org.knowhowlab.maven.plugins.keepass.dao.KeePassProperty;
-import org.knowhowlab.maven.plugins.keepass.util.JceWorkaround;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-
-import static java.lang.String.format;
-import static org.apache.maven.plugins.annotations.LifecyclePhase.VALIDATE;
-import static org.knowhowlab.maven.plugins.keepass.dao.KeePassDAO.convertToUUID;
 
 /**
  * Reads account information and passwords from KeePass file and set them to system properties
@@ -72,12 +71,6 @@ public class ReadMojo extends AbstractMojo {
     private List<Record> records = new ArrayList<Record>();
 
     /**
-     * JCE Workaround. Only for Java 7+
-     */
-    @Parameter(property = "keepass.jce-workaround", defaultValue = "false")
-    private boolean jceWorkaround;
-
-    /**
      * Ignores group and entry duplicates. In case of duplication only warns in logs.
      */
     @Parameter(property = "keepass.ignore-duplicates", defaultValue = "false")
@@ -94,10 +87,6 @@ public class ReadMojo extends AbstractMojo {
         if (skip) {
             getLog().info("Plugin is disabled.");
             return;
-        }
-
-        if (jceWorkaround) {
-            applyJCEWorkaround();
         }
 
         KeePassDAO dao = new KeePassDAO(file);
@@ -126,26 +115,15 @@ public class ReadMojo extends AbstractMojo {
         }
     }
 
-    private void applyJCEWorkaround() {
-        getLog().debug("Applying JCE workaround...");
-        try {
-            JceWorkaround.apply();
-
-            getLog().info("JCE workaround is applied.");
-        } catch (Exception e) {
-            getLog().warn("Unable to apply JCE workaround. Try to install JCE.", e);
-        }
-    }
-
     private void handleRecord(KeePassDAO dao, Record record) throws MojoFailureException {
         KeePassGroup group = findGroup(dao, record.getGroup());
         KeePassEntry entry = findEntry(dao, group, record.getEntry());
 
         getLog().info(format("Entry with UUID: %s is found", entry.getUuid()));
 
-        project.getProperties().setProperty(record.getPrefix() + "username", entry.getUsername());
-        project.getProperties().setProperty(record.getPrefix() + "password", entry.getPassword());
-        project.getProperties().setProperty(record.getPrefix() + "url", entry.getUrl());
+        project.getProperties().setProperty(record.getPrefix() + record.getSuffixUsername(), entry.getUsername());
+        project.getProperties().setProperty(record.getPrefix() + record.getSuffixPassword(), entry.getPassword());
+        project.getProperties().setProperty(record.getPrefix() + record.getSuffixUrl(), entry.getUrl());
 
         handleAttributes(record.getPrefix(), entry, record.getAttributes());
     }

@@ -39,7 +39,6 @@
                     <file>${project.basedir}/src/main/keepass/test.kdbx</file>
                     <password>test123</password>
                     <keyFile>${project.basedir}/src/main/keepass/keyfile.key</keyFile>
-                    <jceWorkaround>true</jceWorkaround>
                 </configuration>
                 <executions>
                     <execution>

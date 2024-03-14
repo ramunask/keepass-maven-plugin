@@ -16,10 +16,10 @@
 
 package org.knowhowlab.maven.plugins.keepass;
 
-import org.apache.maven.plugins.annotations.Parameter;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import org.apache.maven.plugins.annotations.Parameter;
 
 /**
  * Record that should be read from a KeePass file and set to system properties
@@ -33,6 +33,24 @@ public class Record {
      */
     @Parameter(required = true)
     private String prefix;
+
+    /**
+     * suffix for username
+     */
+    @Parameter(required = false, defaultValue = "username")
+    private String suffixUsername;
+
+    /**
+     * suffix for password
+     */
+    @Parameter(required = false, defaultValue = "password")
+    private String suffixPassword;
+
+    /**
+     * suffix for url
+     */
+    @Parameter(required = false, defaultValue = "url")
+    private String suffixUrl;
 
     /**
      * Groups filter. It has a format: [filter-type]:[filter-data].
@@ -57,6 +75,18 @@ public class Record {
 
     public String getPrefix() {
         return prefix;
+    }
+    
+    public String getSuffixUsername() {
+    	return suffixUsername;
+    }
+
+    public String getSuffixPassword() {
+    	return suffixPassword;
+    }
+
+    public String getSuffixUrl() {
+    	return suffixUrl;
     }
 
     public String getGroup() {

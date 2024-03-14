@@ -12,5 +12,9 @@
 hs_err_pid*
 /keepass-maven-plugin.iml
 /.idea
+/.settings/
+/.factorypath
+/.classpath
+/.project
 
 /target

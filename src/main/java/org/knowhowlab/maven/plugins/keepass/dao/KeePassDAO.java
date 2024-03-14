@@ -17,8 +17,9 @@
 package org.knowhowlab.maven.plugins.keepass.dao;
 
 import de.slackspace.openkeepass.KeePassDatabase;
+import de.slackspace.openkeepass.domain.Entry;
 import de.slackspace.openkeepass.domain.KeePassFile;
-import de.slackspace.openkeepass.exception.KeePassDatabaseUnreadable;
+import de.slackspace.openkeepass.exception.KeePassDatabaseUnreadableException;
 import org.knowhowlab.maven.plugins.keepass.dao.filter.*;
 
 import java.io.File;
@@ -52,7 +53,7 @@ public class KeePassDAO {
         try {
             keePassFile = keePassDatabase.openDatabase(password);
             return this;
-        } catch (KeePassDatabaseUnreadable e) {
+        } catch (KeePassDatabaseUnreadableException e) {
             throw new IllegalArgumentException("Invalid password?", e);
         }
     }
@@ -61,7 +62,7 @@ public class KeePassDAO {
         try {
             keePassFile = keePassDatabase.openDatabase(password, keyFile);
             return this;
-        } catch (KeePassDatabaseUnreadable e) {
+        } catch (KeePassDatabaseUnreadableException e) {
             throw new IllegalArgumentException("Invalid password and/or key file?", e);
         }
     }
@@ -70,7 +71,7 @@ public class KeePassDAO {
         try {
             keePassFile = keePassDatabase.openDatabase(keyFile);
             return this;
-        } catch (KeePassDatabaseUnreadable e) {
+        } catch (KeePassDatabaseUnreadableException e) {
             throw new IllegalArgumentException("Invalid key file?", e);
         }
     }
@@ -84,7 +85,11 @@ public class KeePassDAO {
     }
 
     public KeePassEntry getEntry(UUID uuid) {
-        return new KeePassEntry(keePassFile.getEntryByUUID(uuid));
+        Entry entry = keePassFile.getEntryByUUID(uuid);
+        if(entry==null) {
+        	throw new IllegalArgumentException("Entry with UUID "+uuid+" does not exists");
+        }
+		return new KeePassEntry(entry);
     }
 
     public List<KeePassGroup> getGroupsByName(String name) {

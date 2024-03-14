@@ -66,21 +66,3 @@ and store in properties **http.username**, **http.password** and **http.url**
         </executions>
     </plugin>
 ```
-
-## Known issues
-
-On Java 7 or 8 you can see an exception
-
-```java
-java.security.InvalidKeyException: Illegal key size or default parameters
-```
-
-This means that JCE (Java Cryptography Extension) should be installed: 
-- [Download JCE for JDK 7](http://www.oracle.com/technetwork/java/embedded/embedded-se/downloads/jce-7-download-432124.html)
-- [Download JCE for JDK 8](http://www.oracle.com/technetwork/java/javase/downloads/jce8-download-2133166.html)
-
-or use property that applies JCE workaround from here ([JCE Workaround](http://stackoverflow.com/a/20286961/328982))
-
-```xml
-    <jceWorkaround>true</jceWorkaround>
-```
